@@ -131,3 +131,13 @@ platforms:
     name: "The New York Times"
   - id: "wsj"
     name: "Wall Street Journal"
+  
+  # Japanese Platforms
+  - id: "twitter"
+    name: "Twitter/X"
+  - id: "reddit"
+    name: "Reddit (r/newsokur, etc.)"
+  - id: "github-trending"
+    name: "GitHub Trending"
+  # Note: Add more Japanese platforms as they become available via newsnow API
+  # Popular Japanese news sources: NHK, Asahi, Yomiuri, Mainichi, Nikkei

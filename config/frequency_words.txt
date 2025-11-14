@@ -1,4 +1,4 @@
-# Global Tech & Culture Keywords (Chinese + Western)
+# Global Tech & Culture Keywords (Chinese + Western + Japanese)
 # Format: One keyword per line
 # Prefix with + for required keywords (must appear)
 # Prefix with ! for exclusion keywords (must not appear)
@@ -280,6 +280,115 @@ New Quality Productive Forces
 Made in China
 自主创新
 Independent Innovation
+
+# Japanese Keywords
+日本
+Japan
+東京
+Tokyo
+大阪
+Osaka
+
+AI
+人工知能
+ChatGPT
+OpenAI
+機械学習
+Machine Learning
+
+ソニー
+Sony
+トヨタ
+Toyota
+ホンダ
+Honda
+任天堂
+Nintendo
+パナソニック
+Panasonic
+ソフトバンク
+SoftBank
+楽天
+Rakuten
+
+LINE
+Twitter
+X
+
+NHK
+朝日新聞
+Asahi
+読売新聞
+Yomiuri
+毎日新聞
+Mainichi
+日経新聞
+Nikkei
+
+新幹線
+Shinkansen
+オリンピック
+Olympics
+パラリンピック
+Paralympics
+
+# Japanese Tech Companies & Leaders
+孫正義
+Masayoshi Son
+ソフトバンク
+SoftBank
+ARM
+
+三木谷浩史
+Hiroshi Mikitani
+楽天
+Rakuten
+
+堀江貴文
+Takafumi Horie
+
+# Japanese Gaming & Entertainment
+任天堂
+Nintendo
+スーパーマリオ
+Super Mario
+ゼルダ
+Zelda
+ポケモン
+Pokemon
+
+PlayStation
+Sony Interactive Entertainment
+Xbox
+
+アニメ
+Anime
+漫画
+Manga
+コスプレ
+Cosplay
+
+# Japanese Culture & Society
+和食
+Washoku
+寿司
+Sushi
+ラーメン
+Ramen
+
+桜
+Sakura
+富士山
+Mount Fuji
+Fuji
+
+# Japanese Startups & Innovation
+スタートアップ
+Startup
+ベンチャー
+Venture
+IPO
+上場
 
 # Sports
 NFL
