@@ -1,113 +1,298 @@
-胖东来
-于东来
+# Global Tech & Culture Keywords (Chinese + Western)
+# Format: One keyword per line
+# Prefix with + for required keywords (must appear)
+# Prefix with ! for exclusion keywords (must not appear)
 
-DeepSeek
-梁文锋
-
+# Chinese Tech Companies & Leaders
 华为
+Huawei
 鸿蒙
 HarmonyOS
 任正非
+Ren Zhengfei
+
+字节
+ByteDance
+bytedance
+张一鸣
+Zhang Yiming
+
+腾讯
+Tencent
+马化腾
+Pony Ma
+
+阿里巴巴
+Alibaba
+马云
+Jack Ma
+
+百度
+Baidu
+李彦宏
+Robin Li
+
+小米
+Xiaomi
+雷军
+Lei Jun
 
 比亚迪
+BYD
 王传福
+Wang Chuanfu
 
 大疆
 DJI
 
-宇树
-王兴兴
+京东
+JD.com
+刘强东
+Richard Liu
+
+美团
+Meituan
+王兴
+Wang Xing
 
 智元
 灵犀
 稚晖君
 彭志辉
+Peng Zhihui
 
 黑神话
+Black Myth
 冯骥
+Feng Ji
 
 影之刃零
+Shadow Blade Zero
 梁其伟
+Liang Qiwei
 
 哪吒
+Nezha
 饺子
+Jiaozi
 杨宇
+Yang Yu
 !车
 !餐
 
 三体
+Three Body
 流浪地球
+Wandering Earth
 刘慈欣
+Liu Cixin
 郭帆
+Guo Fan
 
 申奥
+Shen Ao
 
-京东
-刘强东
+胖东来
+Pang Donglai
+于东来
+Yu Donglai
 
-字节
-bytedance
-张一鸣
+DeepSeek
+梁文锋
+Liang Wenfeng
 
-特斯拉
-马斯克
+宇树
+Unitree
+王兴兴
+Wang Xingxing
 
-微软
+# Western Tech Companies & Leaders
+OpenAI
+ChatGPT
+GPT-4
+Sora
+Sam Altman
+
+Google
+Gemini
+DeepMind
+Sundar Pichai
+
 Microsoft
+Satya Nadella
+Copilot
+Azure
 
-英伟达
+Apple
+Tim Cook
+iPhone
+iPad
+Mac
+iOS
+Vision Pro
+
+Meta
+Mark Zuckerberg
+Facebook
+Instagram
+Threads
+Llama
+
+Amazon
+AWS
+Andy Jassy
+Alexa
+
+Tesla
+Elon Musk
+SpaceX
+Neuralink
+xAI
+
 NVIDIA
-黄仁勋
+Jensen Huang
+CUDA
+AI chips
 
 AMD
+Lisa Su
 
-谷歌
-google
-gemini
-deepmind
-
-chatgpt
-openai
-sora
-
-claude
 Anthropic
+Claude
+Dario Amodei
 
-iphone
-ipad
-mac
-ios
-
-ai
+# AI & Machine Learning
+AI
+Artificial Intelligence
+Machine Learning
+Deep Learning
+LLM
+Large Language Model
+AGI
+Generative AI
 !gai
-人工智能
 
-自动驾驶
+# Programming & Development
+Python
+JavaScript
+TypeScript
+React
+Vue
+Node.js
+Docker
+Kubernetes
+GitHub
+GitLab
 
-机器人
+# Tech Trends
+Web3
+Blockchain
+Bitcoin
+Ethereum
+Cryptocurrency
+NFT
 
-国产
+Cloud Computing
+Serverless
+Microservices
+DevOps
+
+# Startups & Innovation
+Startup
+VC
+Venture Capital
+IPO
+Unicorn
+Y Combinator
+
+# Social Media & Platforms
+Twitter
+X
+Reddit
+LinkedIn
+TikTok
+YouTube
+Discord
+Slack
+
+# Science & Space
+NASA
+Space
+Mars
+Moon
+Rocket
+SpaceX
+James Webb
+Astronomy
+
+# Climate & Energy
+Climate Change
+Renewable Energy
+Solar
+Wind Power
+Electric Vehicle
+EV
+Tesla
+
+# Gaming
+Gaming
+PlayStation
+Xbox
+Nintendo
+Steam
+Epic Games
+
+# Entertainment
+Netflix
+Disney+
+Streaming
+Hollywood
+
+# Business & Finance
+Stock Market
+NASDAQ
+S&P 500
+Federal Reserve
+Interest Rates
+Inflation
+
+# Politics
+United States
+USA
+Washington
+Congress
+Senate
+White House
+
 中国
-
-美国
-日本
-韩国
-
-芯片
-光刻机
-
-科技
-
-核能
-
-水电站
-雅鲁藏布江
+China
+北京
+Beijing
+上海
+Shanghai
+深圳
+Shenzhen
 
 新质生产力
+New Quality Productive Forces
 
-月球
-登月
-火星
-宇宙
-飞船
-航空
+国产
+Made in China
+自主创新
+Independent Innovation
+
+# Sports
+NFL
+NBA
+MLB
+Soccer
+Football
+World Cup
+
+# Health & Science
+COVID
+Vaccine
+Medical
+Research
+Science
+Technology

@@ -178,6 +178,14 @@ def load_config():
     config["NTFY_TOKEN"] = os.environ.get("NTFY_TOKEN", "").strip() or webhooks.get(
         "ntfy_token", ""
     )
+    
+    # Slack & Discord配置
+    config["SLACK_WEBHOOK_URL"] = os.environ.get("SLACK_WEBHOOK_URL", "").strip() or webhooks.get(
+        "slack_webhook_url", ""
+    )
+    config["DISCORD_WEBHOOK_URL"] = os.environ.get("DISCORD_WEBHOOK_URL", "").strip() or webhooks.get(
+        "discord_webhook_url", ""
+    )
 
     # 输出配置来源信息
     notification_sources = []
@@ -203,6 +211,12 @@ def load_config():
     if config["NTFY_SERVER_URL"] and config["NTFY_TOPIC"]:
         server_source = "环境变量" if os.environ.get("NTFY_SERVER_URL") else "配置文件"
         notification_sources.append(f"ntfy({server_source})")
+    if config["SLACK_WEBHOOK_URL"]:
+        source = "环境变量" if os.environ.get("SLACK_WEBHOOK_URL") else "配置文件"
+        notification_sources.append(f"Slack({source})")
+    if config["DISCORD_WEBHOOK_URL"]:
+        source = "环境变量" if os.environ.get("DISCORD_WEBHOOK_URL") else "配置文件"
+        notification_sources.append(f"Discord({source})")
 
     if notification_sources:
         print(f"通知渠道配置来源: {', '.join(notification_sources)}")
@@ -2839,6 +2853,10 @@ def split_content_into_batches(
             max_bytes = CONFIG.get("FEISHU_BATCH_SIZE", 29000)
         elif format_type == "ntfy":
             max_bytes = 3800
+        elif format_type == "slack":
+            max_bytes = 4000
+        elif format_type == "discord":
+            max_bytes = 1900  # Discord has 2000 char limit
         else:
             max_bytes = CONFIG.get("MESSAGE_BATCH_SIZE", 4000)
 
@@ -2863,6 +2881,10 @@ def split_content_into_batches(
         base_header += f"**时间：** {now.strftime('%Y-%m-%d %H:%M:%S')}\n\n"
         base_header += f"**类型：** 热点分析报告\n\n"
         base_header += "---\n\n"
+    elif format_type == "slack":
+        base_header = f"*Total News: {total_titles}*\n\n"
+    elif format_type == "discord":
+        base_header = f"**Total News: {total_titles}**\n\n"
 
     base_footer = ""
     if format_type == "wework":
@@ -2885,6 +2907,14 @@ def split_content_into_batches(
         base_footer = f"\n\n> 更新时间：{now.strftime('%Y-%m-%d %H:%M:%S')}"
         if update_info:
             base_footer += f"\n> TrendRadar 发现新版本 **{update_info['remote_version']}**，当前 **{update_info['current_version']}**"
+    elif format_type == "slack":
+        base_footer = f"\n\n_Updated: {now.strftime('%Y-%m-%d %H:%M:%S')}_"
+        if update_info:
+            base_footer += f"\n_TrendRadar new version {update_info['remote_version']} available, current {update_info['current_version']}_"
+    elif format_type == "discord":
+        base_footer = f"\n\n> Updated: {now.strftime('%Y-%m-%d %H:%M:%S')}"
+        if update_info:
+            base_footer += f"\n> TrendRadar new version **{update_info['remote_version']}** available, current **{update_info['current_version']}**"
 
     stats_header = ""
     if report_data["stats"]:
@@ -2898,6 +2928,10 @@ def split_content_into_batches(
             stats_header = f"📊 **热点词汇统计**\n\n"
         elif format_type == "dingtalk":
             stats_header = f"📊 **热点词汇统计**\n\n"
+        elif format_type == "slack":
+            stats_header = f"📊 *Hot Keywords Statistics*\n\n"
+        elif format_type == "discord":
+            stats_header = f"📊 **Hot Keywords Statistics**\n\n"
 
     current_batch = base_header
     current_batch_has_content = False
@@ -3339,6 +3373,8 @@ def send_to_notifications(
     ntfy_server_url = CONFIG["NTFY_SERVER_URL"]
     ntfy_topic = CONFIG["NTFY_TOPIC"]
     ntfy_token = CONFIG.get("NTFY_TOKEN", "")
+    slack_webhook_url = CONFIG.get("SLACK_WEBHOOK_URL", "")
+    discord_webhook_url = CONFIG.get("DISCORD_WEBHOOK_URL", "")
 
     update_info_to_send = update_info if CONFIG["SHOW_VERSION_UPDATE"] else None
 
@@ -3395,6 +3431,18 @@ def send_to_notifications(
             html_file_path,
             email_smtp_server,
             email_smtp_port,
+        )
+
+    # 发送到 Slack
+    if slack_webhook_url:
+        results["slack"] = send_to_slack(
+            slack_webhook_url, report_data, report_type, update_info_to_send, proxy_url, mode
+        )
+
+    # 发送到 Discord
+    if discord_webhook_url:
+        results["discord"] = send_to_discord(
+            discord_webhook_url, report_data, report_type, update_info_to_send, proxy_url, mode
         )
 
     if not results:
@@ -4007,6 +4055,137 @@ def send_to_ntfy(
         return False
 
 
+def send_to_slack(
+    webhook_url: str,
+    report_data: Dict,
+    report_type: str,
+    update_info: Optional[Dict] = None,
+    proxy_url: Optional[str] = None,
+    mode: str = "daily",
+) -> bool:
+    """Send to Slack (supports batch sending)"""
+    headers = {"Content-Type": "application/json"}
+    proxies = None
+    if proxy_url:
+        proxies = {"http": proxy_url, "https": proxy_url}
+
+    # Get batch content
+    batches = split_content_into_batches(
+        report_data, "slack", update_info, max_bytes=4000, mode=mode
+    )
+
+    print(f"Slack message split into {len(batches)} batches [{report_type}]")
+
+    # Send batches
+    for i, batch_content in enumerate(batches, 1):
+        batch_size = len(batch_content.encode("utf-8"))
+        print(
+            f"Sending Slack batch {i}/{len(batches)}, size: {batch_size} bytes [{report_type}]"
+        )
+
+        # Add batch identifier
+        if len(batches) > 1:
+            batch_header = f"*[Batch {i}/{len(batches)}]*\n\n"
+            batch_content = batch_header + batch_content
+
+        # Convert markdown to Slack format (basic conversion)
+        slack_text = batch_content.replace("**", "*").replace("`", "`")
+
+        payload = {
+            "text": f"TrendRadar Hot News Analysis - {report_type}",
+            "blocks": [
+                {
+                    "type": "section",
+                    "text": {
+                        "type": "mrkdwn",
+                        "text": slack_text
+                    }
+                }
+            ]
+        }
+
+        try:
+            response = requests.post(
+                webhook_url, headers=headers, json=payload, proxies=proxies, timeout=30
+            )
+            if response.status_code == 200:
+                print(f"Slack batch {i}/{len(batches)} sent successfully [{report_type}]")
+                # Interval between batches
+                if i < len(batches):
+                    time.sleep(CONFIG["BATCH_SEND_INTERVAL"])
+            else:
+                print(
+                    f"Slack batch {i}/{len(batches)} failed [{report_type}], status code: {response.status_code}"
+                )
+                return False
+        except Exception as e:
+            print(f"Slack batch {i}/{len(batches)} error [{report_type}]: {e}")
+            return False
+
+    print(f"Slack all {len(batches)} batches sent [{report_type}]")
+    return True
+
+
+def send_to_discord(
+    webhook_url: str,
+    report_data: Dict,
+    report_type: str,
+    update_info: Optional[Dict] = None,
+    proxy_url: Optional[str] = None,
+    mode: str = "daily",
+) -> bool:
+    """Send to Discord (supports batch sending, Discord has 2000 char limit per message)"""
+    headers = {"Content-Type": "application/json"}
+    proxies = None
+    if proxy_url:
+        proxies = {"http": proxy_url, "https": proxy_url}
+
+    # Get batch content, Discord has 2000 character limit
+    batches = split_content_into_batches(
+        report_data, "discord", update_info, max_bytes=1900, mode=mode
+    )
+
+    print(f"Discord message split into {len(batches)} batches [{report_type}]")
+
+    # Send batches
+    for i, batch_content in enumerate(batches, 1):
+        batch_size = len(batch_content.encode("utf-8"))
+        print(
+            f"Sending Discord batch {i}/{len(batches)}, size: {batch_size} bytes [{report_type}]"
+        )
+
+        # Add batch identifier
+        if len(batches) > 1:
+            batch_header = f"**[Batch {i}/{len(batches)}]**\n\n"
+            batch_content = batch_header + batch_content
+
+        # Discord supports markdown
+        payload = {
+            "content": f"**TrendRadar Hot News Analysis - {report_type}**\n\n{batch_content}"
+        }
+
+        try:
+            response = requests.post(
+                webhook_url, headers=headers, json=payload, proxies=proxies, timeout=30
+            )
+            if response.status_code == 204:
+                print(f"Discord batch {i}/{len(batches)} sent successfully [{report_type}]")
+                # Interval between batches
+                if i < len(batches):
+                    time.sleep(CONFIG["BATCH_SEND_INTERVAL"])
+            else:
+                print(
+                    f"Discord batch {i}/{len(batches)} failed [{report_type}], status code: {response.status_code}"
+                )
+                return False
+        except Exception as e:
+            print(f"Discord batch {i}/{len(batches)} error [{report_type}]: {e}")
+            return False
+
+    print(f"Discord all {len(batches)} batches sent [{report_type}]")
+    return True
+
+
 # === 主分析器 ===
 class NewsAnalyzer:
     """新闻分析器"""
@@ -4119,6 +4298,8 @@ class NewsAnalyzer:
                     and CONFIG["EMAIL_TO"]
                 ),
                 (CONFIG["NTFY_SERVER_URL"] and CONFIG["NTFY_TOPIC"]),
+                CONFIG.get("SLACK_WEBHOOK_URL", ""),
+                CONFIG.get("DISCORD_WEBHOOK_URL", ""),
             ]
         )
 
